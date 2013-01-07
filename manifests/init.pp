@@ -132,7 +132,6 @@ class cobbler (
   }
   file { '/etc/httpd/conf.d/proxy_cobbler.conf':
     content => template('cobbler/proxy_cobbler.conf.erb'),
-    require => Service[$apache_service],
     notify  => Service[$apache_service],
   }
   file { $distro_path :

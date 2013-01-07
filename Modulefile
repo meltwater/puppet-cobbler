@@ -1,5 +1,5 @@
 name 'puppet-cobbler'
-version '1.2.0'
+version '1.2.1'
 source 'https://bitbucket.org/jsosic/puppet-cobbler/src'
 author 'Jakov Sosic <jsosic@gmail.com>'
 license 'Apache 2.0'
