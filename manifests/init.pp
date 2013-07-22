@@ -24,7 +24,13 @@
 #     Wether or not to manage ISC DHCP.
 #
 #   - $dhcp_dynamic_range [type: string]
-#     Range for DHCP server
+#     Enable dynamic range for DHCP server
+#
+#   - $dhcp_range_start [type: string]
+#     Starting octet for the DHCP range
+#
+#   - $dhcp_range_end [type: string]
+#     Ending octet for the DHCP range
 #
 #   - $manage_dns [type: string]
 #     Wether or not to manage DNS
@@ -87,6 +93,8 @@ class cobbler (
   $distro_path        = $cobbler::params::distro_path,
   $manage_dhcp        = $cobbler::params::manage_dhcp,
   $dhcp_dynamic_range = $cobbler::params::dhcp_dynamic_range,
+  $dhcp_range_start   = $cobbler::params::dhcp_range_start,
+  $dhcp_range_end     = $cobbler::params::dhcp_range_end,
   $manage_dns         = $cobbler::params::manage_dns,
   $dns_option         = $cobbler::params::dns_option,
   $manage_tftpd       = $cobbler::params::manage_tftpd,

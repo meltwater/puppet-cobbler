@@ -32,7 +32,7 @@ else
 end %>;
     option routers              <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.1;
     filename                    "/pxelinux.0";<% if dhcp_dynamic_range == 1 then %>
-    range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.100 <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.200;<% end %>
+    range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_start -%> <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_end -%>;<% end %>
     default-lease-time          21600;
     max-lease-time              43200;
     next-server                 $next_server;
