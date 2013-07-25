@@ -30,6 +30,8 @@ class cobbler::params {
   $dhcp_dynamic_range = 0
   $dhcp_range_start   = 100
   $dhcp_range_end     = 200
+  $dhcp_lease_default = 21600
+  $dhcp_lease_max     = 43200
 
   # dns options
   $manage_dns = 0
