@@ -32,6 +32,9 @@
 #   - $dhcp_range_end [type: string]
 #     Ending octet for the DHCP range
 #
+#   - $dhcp_domain_search [type: string or array of strings]
+#     (Optional) additional 'search list' of other domain names for clients
+#
 #   - $manage_dns [type: string]
 #     Wether or not to manage DNS
 #
@@ -97,6 +100,7 @@ class cobbler (
   $dhcp_range_end     = $cobbler::params::dhcp_range_end,
   $dhcp_lease_default = $cobbler::params::dhcp_lease_default,
   $dhcp_lease_max     = $cobbler::params::dhcp_lease_max,
+  $dhcp_domain_search = undef,
   $manage_dns         = $cobbler::params::manage_dns,
   $dns_option         = $cobbler::params::dns_option,
   $manage_tftpd       = $cobbler::params::manage_tftpd,

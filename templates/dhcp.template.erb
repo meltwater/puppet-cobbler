@@ -30,6 +30,9 @@ elsif (nameservers.kind_of?(String) && nameservers != '' )
 else
    puts("127.0.0.1")
 end %>;
+<% if @dhcp_domain_search -%>
+    option domain-search        <% if @dhcp_domain_search.kind_of?(String) -%>"<%= @dhcp_domain_search -%>"<% else -%>"<%= @dhcp_domain_search.join("\", \"") -%>"<% end -%>;
+<%- end -%> 
     option routers              <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.1;
     filename                    "/pxelinux.0";<% if dhcp_dynamic_range == 1 then %>
     range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_start -%> <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_end -%>;<% end %>
