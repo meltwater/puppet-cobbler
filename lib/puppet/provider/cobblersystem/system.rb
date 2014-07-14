@@ -146,6 +146,7 @@ Puppet::Type.type(:cobblersystem).provide(:system) do
     self.interfaces = @resource.should(:interfaces) unless self.interfaces == @resource.should(:interfaces)
     self.netboot    = @resource.should(:netboot)    unless self.netboot    == @resource.should(:netboot)
     self.comment    = @resource.should(:comment)    unless self.comment    == @resource.should(:comment)
+    self.ks_meta    = @resource.should(:ks_meta)    unless self.ks_meta    == @resource.should(:ks_meta)
 
     # sync state
     cobbler('sync')
