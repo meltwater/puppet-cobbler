@@ -39,6 +39,10 @@ cobblersystem { 'test.domain.com':
     self[:profile]
   end
 
+  newproperty(:ks_meta) do
+    desc 'ks_meta'
+  end 
+
   newproperty(:interfaces) do
     desc 'The list of interfaces in system.'
 
