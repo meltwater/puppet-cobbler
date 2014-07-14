@@ -41,6 +41,42 @@ cobblersystem { 'test.domain.com':
 
   newproperty(:ks_meta) do
     desc 'ks_meta'
+    def insync?(is)
+      should = @should.first
+
+      shouldhash = {}
+      should.split(' ').each do |pair|
+        key,value = pair.split(/=/)
+        shouldhash[key] = value
+      end
+      # if members of hashes are not the same, something
+      # was added or removed from manifest, so return false
+      return false unless is.keys.sort == shouldhash.keys.sort
+      # check if something was added or removed on second level
+      is.each do |l,w|
+        if w.is_a?(Hash)
+          return false unless w.keys.sort == shouldhash[l].keys.sort
+        end 
+      end 
+      shouldhash.each do |k, v|
+        if v.is_a?(Hash)
+          v.each do |l, w|
+            unless is[k][l].nil?    
+               return false unless is[k][l].to_s == w.to_s
+            end
+          end
+        end
+      end
+      true
+    end 
+
+    def should_to_s(newvalue)
+      newvalue.inspect
+    end 
+
+    def is_to_s(currentvalue)
+      currentvalue.inspect
+    end
   end 
 
   newproperty(:interfaces) do
