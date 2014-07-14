@@ -33,8 +33,8 @@ Puppet::Type.type(:cobblersystem).provide(:system) do
         :hostname       => member['hostname'],
         :gateway        => member['gateway'],
         :netboot        => member['netboot_enabled'].to_s,
-        :comment        => member['comment']
-        :ks_meta         => member['ks_meta']
+        :comment        => member['comment'],
+        :ks_meta        => member['ks_meta']
       )
     end
     keys
@@ -68,7 +68,7 @@ Puppet::Type.type(:cobblersystem).provide(:system) do
 
   # sets ks_meta
   def ks_meta=(value)
-    cobbler('system', 'edit', '--name=' + @resource[:name], '--ks_meta=' + value)
+    cobbler('system', 'edit', '--name=' + @resource[:name], '--ksmeta=' + value)
     @property_hash[:ks_meta]=(value)
   end
 
