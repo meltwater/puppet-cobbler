@@ -34,7 +34,7 @@ Puppet::Type.type(:cobblersystem).provide(:system) do
         :gateway        => member['gateway'],
         :netboot        => member['netboot_enabled'].to_s,
         :comment        => member['comment']
-        :k_meta         => member['ks_meta']
+        :ks_meta         => member['ks_meta']
       )
     end
     keys
