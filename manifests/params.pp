@@ -26,7 +26,7 @@ class cobbler::params {
   # dhcp options
   $manage_dhcp        = 0
   $dhcp_option        = 'isc'
-  $dhcp_interfaces    = 'eth0'
+  $dhcp_interfaces    = ['eth0']
   $dhcp_dynamic_range = 0
   $dhcp_range_start   = 100
   $dhcp_range_end     = 200

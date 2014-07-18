@@ -18,15 +18,15 @@ allow bootp;
 ignore client-updates;
 set vendorclass = option vendor-class-identifier;
 
-<% dhcp_interfaces.each do |iface| -%>
+<% @dhcp_interfaces.each do |iface| -%>
 subnet <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.0 netmask 255.255.255.0 {
-    option domain-name          "<%= domain %>";
+    option domain-name          "<%= @domain %>";
     option subnet-mask          255.255.255.0;
     option domain-name-servers  <%=
-if nameservers.kind_of?(Array)
-   nameservers.join(", ")
-elsif (nameservers.kind_of?(String) && nameservers != '' )
-   nameservers
+if @nameservers.kind_of?(Array)
+   @nameservers.join(", ")
+elsif (@nameservers.kind_of?(String) && @nameservers != '' )
+   @nameservers
 else
    puts("127.0.0.1")
 end %>;
@@ -35,7 +35,7 @@ end %>;
 <%- end -%> 
     option routers              <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.1;
     filename                    "/pxelinux.0";<% if dhcp_dynamic_range == 1 then %>
-    range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_start -%> <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= dhcp_range_end -%>;<% end %>
+    range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= @dhcp_range_start -%> <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= @dhcp_range_end -%>;<% end %>
     default-lease-time          <%= dhcp_lease_default -%>;
     max-lease-time              <%= dhcp_lease_max -%>;
     next-server                 $next_server;
