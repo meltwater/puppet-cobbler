@@ -13,9 +13,9 @@ define cobbler::add_distro ($arch,$isolink) {
     require => [ Service[$cobbler::service_name], Service[$cobbler::apache_service] ],
   }
   $defaultrootpw = $cobbler::defaultrootpw
-  file { "${cobbler::distro_path}/kickstarts/${distro}.ks":
-    ensure  => present,
-    content => template("cobbler/${distro}.ks.erb"),
-    require => File["${cobbler::distro_path}/kickstarts"],
-  }
+#  file { "${cobbler::distro_path}/kickstarts/${distro}.ks":
+#    ensure  => present,
+#    content => template("cobbler/${distro}.ks.erb"),
+#    require => File["${cobbler::distro_path}/kickstarts"],
+#  }
 }
