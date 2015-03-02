@@ -10,9 +10,6 @@ define cobbler::add_distro ($arch,$isolink) {
     destdir => $cobbler::distro_path,
     kernel  => "${cobbler::distro_path}/${distro}/images/pxeboot/vmlinuz",
     initrd  => "${cobbler::distro_path}/${distro}/images/pxeboot/initrd.img",
-    ks_meta => {
-      "tree" => "http://@@server@@/cblr/links/${distro}",
-    },
     require => [ Service[$cobbler::service_name], Service[$cobbler::apache_service] ],
   }
   $defaultrootpw = $cobbler::defaultrootpw
