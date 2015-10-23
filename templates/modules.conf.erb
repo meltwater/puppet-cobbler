@@ -54,7 +54,7 @@ module = authz_allowall
 # https://fedorahosted.org/cobbler/wiki/ManageDns
 
 [dns]
-module = manage_<%= dns_option %>
+module = manage_<%= @dns_option %>
 
 # dhcp:
 # chooses the DHCP management engine if manage_dhcp is enabled
@@ -67,7 +67,7 @@ module = manage_<%= dns_option %>
 # https://fedorahosted.org/cobbler/wiki/ManageDhcp
   
 [dhcp]
-module = manage_<%= dhcp_option %>
+module = manage_<%= @dhcp_option %>
 
 # tftpd:
 # chooses the TFTP management engine if manage_tftp is enabled
@@ -81,6 +81,6 @@ module = manage_<%= dhcp_option %>
 # https://fedorahosted.org/cobbler/wiki/ManageTftp
   
 [tftpd]
-module = manage_<%= tftpd_option %>
+module = manage_<%= @tftpd_option %>
 
 #--------------------------------------------------
