@@ -11,11 +11,11 @@ class cobbler::config {
     notify  => Service[$cobbler::apache_service],
   }
   
-  file { $distro_path :
+  file { $cobbler::distro_path :
     ensure => directory,
     mode   => '0755',
   }
-  file { "${distro_path}/kickstarts" :
+  file { "${cobbler::distro_path}/kickstarts" :
     ensure => directory,
     mode   => '0755',
   }
@@ -39,21 +39,21 @@ class cobbler::config {
   }
 
   # purge resources
-  if $purge_distro == true {
+  if $cobbler::purge_distro == true {
     resources { 'cobblerdistro':  purge => true, }
   }
-  if $purge_repo == true {
+  if $cobbler::purge_repo == true {
     resources { 'cobblerrepo':    purge => true, }
   }
-  if $purge_profile == true {
+  if $cobbler::purge_profile == true {
     resources { 'cobblerprofile': purge => true, }
   }
-  if $purge_system == true {
+  if $cobbler::purge_system == true {
     resources { 'cobblersystem':  purge => true, }
   }
 
   # include ISC DHCP only if we choose manage_dhcp
-  if $manage_dhcp == '1' {
+  if $cobbler::manage_dhcp == '1' {
     package { 'dhcp':
       ensure => present,
     }
@@ -67,7 +67,7 @@ class cobbler::config {
       group   => root,
       mode    => '0644',
       content => template('cobbler/dhcp.template.erb'),
-      require => Package[$package_name],
+      require => Package[$cobbler::package_name],
       notify  => Exec['cobblersync'],
     }
   }
