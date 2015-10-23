@@ -12,6 +12,15 @@ some cases, changing existing ones.
 
 Puppet is an open source configuration management tool written in Ruby.
 
+Requirements
+------------
+
+currently this module supports:  
+```
+Centos 6 / 7
+Puppet >= 3.1.1  
+Ruby   >= 1.8.7  
+```
 
 Basic usage
 -----------
