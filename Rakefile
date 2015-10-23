@@ -29,3 +29,8 @@ begin
   end
 rescue Gem::LoadError
 end
+
+desc "Run Acceptance tests on CI with multiple nodes"
+  task :ci  do
+    sh('RS_SET=ci bundle exec rake beaker')
+  end
