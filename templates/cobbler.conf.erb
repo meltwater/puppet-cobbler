@@ -10,6 +10,7 @@ Alias /cobbler_webui_content /var/www/cobbler_webui_content
 WSGIScriptAliasMatch ^/cblr/svc/([^/]*) /var/www/cobbler/svc/services.py
 
 <Directory "/var/www/cobbler">
+    SetEnv VIRTUALENV
     Options Indexes FollowSymLinks
     Order allow,deny
     Allow from all
@@ -31,4 +32,10 @@ BrowserMatch "MSIE" AuthDigestEnableQueryStringHack=On
     Order allow,deny
     Allow from all
 </Directory>
+
+<IfVersion >= 2.4>
+    <Location /cblr>
+        Require all granted
+    </Location>
+</IfVersion>
 
