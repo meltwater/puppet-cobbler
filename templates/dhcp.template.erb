@@ -18,10 +18,13 @@ allow bootp;
 ignore client-updates;
 set vendorclass = option vendor-class-identifier;
 
+option pxe-system-type code 93 = unsigned integer 16;
+
 <% @dhcp_interfaces.each do |iface| -%>
 subnet <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.0 netmask 255.255.255.0 {
-    option domain-name          "<%= @domain %>";
     option subnet-mask          255.255.255.0;
+    option routers              <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.1;
+    option domain-name          "<%= @domain %>";
     option domain-name-servers  <%=
 if @nameservers.kind_of?(Array)
    @nameservers.join(", ")
@@ -30,15 +33,28 @@ elsif (@nameservers.kind_of?(String) && @nameservers != '' )
 else
    puts("127.0.0.1")
 end %>;
+
+
 <% if @dhcp_domain_search -%>
     option domain-search        <% if @dhcp_domain_search.kind_of?(String) -%>"<%= @dhcp_domain_search -%>"<% else -%>"<%= @dhcp_domain_search.join("\", \"") -%>"<% end -%>;
 <%- end -%> 
-    option routers              <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.1;
-    filename                    "/pxelinux.0";<% if dhcp_dynamic_range == 1 then %>
+    <% if dhcp_dynamic_range == 1 then %>
     range dynamic-bootp         <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= @dhcp_range_start -%> <%= instance_variable_get("@ipaddress_#{iface}").match(/\d+\.\d+\.\d+/) %>.<%= @dhcp_range_end -%>;<% end %>
     default-lease-time          <%= dhcp_lease_default -%>;
     max-lease-time              <%= dhcp_lease_max -%>;
     next-server                 $next_server;
+    class "pxeclients" {
+      match if substring (option vendor-class-identifier, 0, 9) = "PXEClient";
+        if option pxe-system-type = 00:02 {
+            filename "ia64/elilo.efi";
+        } else if option pxe-system-type = 00:06 {
+          filename "grub/grub-x86.efi";
+        } else if option pxe-system-type = 00:07 {
+          filename "grub/grub-x86_64.efi";
+        } else {
+          filename "pxelinux.0";
+        }
+     }
 }
 <% end -%>
 
@@ -60,13 +76,23 @@ group {
         #if $iface.hostname:
         option host-name "$iface.hostname";
         #end if
-        #if $iface.subnet:
-        option subnet-mask $iface.subnet;
+        #if $iface.netmask:
+        option subnet-mask $iface.netmask;
         #end if
         #if $iface.gateway:
         option routers $iface.gateway;
         #end if
+        #if $iface.enable_gpxe:
+        if exists user-class and option user-class = "gPXE" {
+            filename "http://$cobbler_server/cblr/svc/op/gpxe/system/$iface.owner";
+        } else if exists user-class and option user-class = "iPXE" {
+            filename "http://$cobbler_server/cblr/svc/op/gpxe/system/$iface.owner";
+        } else {
+            filename "undionly.kpxe";
+        }
+        #else
         filename "$iface.filename";
+        #end if
         ## Cobbler defaults to $next_server, but some users
         ## may like to use $iface.system.server for proxied setups
         next-server $next_server;

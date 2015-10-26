@@ -5,6 +5,6 @@
   <Proxy http://localhost:25151/ >
     Order deny,allow
     Deny from all
-    Allow from <%= allow_access %>
+    Allow from <%= @allow_access %>"
   </Proxy>
 </IfModule>

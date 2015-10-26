@@ -19,6 +19,12 @@ allow_duplicate_ips: 0
 # this is undesirable.
 allow_duplicate_macs: 0
 
+# if 1, cobbler will allow settings to be changed dynamically without
+# a restart of the cobblerd daemon. You can only change this variable
+# by manually editing the settings file, and you MUST restart cobblerd
+# after changing it.
+allow_dynamic_settings: 0
+
 # by default, installs are *not* set to send installation logs to the cobbler
 # # # server.  With 'anamon_enabled', kickstart templates may use the pre_anamon
 # # # snippet to allow remote live monitoring of their installations from the
@@ -33,6 +39,9 @@ anamon_enabled: 0
 # The default value is "login".
 authn_pam_service: "login"
 
+# How long the authentication token is valid for, in seconds
+auth_token_expiration: 3600
+
 # Email out a report when cobbler finishes installing a system.
 # enabled: set to 1 to turn this feature on
 # sender: optional
@@ -44,6 +53,7 @@ build_reporting_sender: ""
 build_reporting_email: [ 'root@localhost' ]
 build_reporting_smtp_server: "localhost"
 build_reporting_subject: ""
+build_reporting_ignorelist: [ "" ]
 
 # Cheetah-language kickstart templates can import Python modules.
 # while this is a useful feature, it is not safe to allow them to 
@@ -53,9 +63,9 @@ build_reporting_subject: ""
 # allow access to the filesystem as Cheetah templates are evaluated
 # by cobblerd as code.
 cheetah_import_whitelist:
-   - "random"
-   - "re"
-   - "time"
+ - "random"
+ - "re"
+ - "time"
 
 # Default createrepo_flags to use for new repositories. If you have
 # createrepo >= 0.4.10, consider "-c cache --update -C", which can
@@ -77,7 +87,7 @@ default_name_servers: []
 # created without specifying an owner are assigned to this
 # owner and/or group.  Can be a comma seperated list.
 default_ownership:
-    - "admin"
+ - "admin"
 
 # cobbler has various sample kickstart templates stored
 # in /var/lib/cobbler/kickstarts/.  This controls
@@ -88,7 +98,7 @@ default_ownership:
 # The simplest way to change the password is to run 
 # openssl passwd -1
 # and put the output between the "" below.
-default_password_crypted: "<%= defaultrootpw -%>"
+default_password_crypted: "<%= @defaultrootpw %>"
 
 # the default template type to use in the absence of any
 # other detected template. If you do not specify the template 
@@ -154,19 +164,19 @@ http_port: 80
 # kernel options can also be applied at the distro/profile/system
 # level.
 kernel_options:
-    ksdevice: bootif
-    lang: ' '
-    text: ~
+ ksdevice: bootif
+ lang: ' '
+ text: ~
 
 # s390 systems require additional kernel options in addition to the
 # above defaults
 kernel_options_s390x:
-    RUNKS: 1
-    ramdisk_size: 40000
-    root: /dev/ram0
-    ro: ~
-    ip: off
-    vnc: ~
+ RUNKS: 1
+ ramdisk_size: 40000
+ root: /dev/ram0
+ ro: ~
+ ip: off
+ vnc: ~
 
 # configuration options if using the authn_ldap module. See the
 # the Wiki for details.  This can be ignored if you are not using
@@ -179,6 +189,9 @@ ldap_anonymous_bind: 1
 ldap_search_bind_dn: ''
 ldap_search_passwd: ''
 ldap_search_prefix: 'uid='
+ldap_tls_cacertfile: ''
+ldap_tls_keyfile: ''
+ldap_tls_certfile: ''
 
 # cobbler has a feature that allows for integration with config management
 # systems such as Puppet.  The following parameters work in conjunction with 
@@ -186,12 +199,12 @@ ldap_search_prefix: 'uid='
 # https://github.com/cobbler/cobbler/wiki/Using-cobbler-with-a-configuration-management-system
 mgmt_classes: []
 mgmt_parameters:
-   from_cobbler: 1
+ from_cobbler: 1
 
 # if enabled, this setting ensures that puppet is installed during
 # machine provision, a client certificate is generated and a
 # certificate signing request is made with the puppet master server
-puppet_auto_setup: <%= puppet_auto_setup %>
+puppet_auto_setup: <%= @puppet_auto_setup %>
 
 # when puppet starts on a system after installation it needs to have
 # its certificate signed by the puppet master server. Enabling the
@@ -199,10 +212,10 @@ puppet_auto_setup: <%= puppet_auto_setup %>
 # certificate after installation if the puppet master server is
 # running on the same machine as cobbler. This requires
 # puppet_auto_setup above to be enabled
-sign_puppet_certs_automatically: <%= sign_puppet_certs_automatically %>
+sign_puppet_certs_automatically: <%= @sign_puppet_certs_automatically %>
 
-# location of the puppet signing utility puppetca
-puppetca_path: "/usr/bin/puppet cert"
+# location of the puppet executable, used for revoking certificates
+puppetca_path: "/usr/bin/puppet"
 
 # when a puppet managed machine is reinstalled it is necessary to
 # remove the puppet certificate from the puppet master server before a
@@ -211,15 +224,26 @@ puppetca_path: "/usr/bin/puppet cert"
 # installed is removed from the puppet master server if the puppet
 # master server is running on the same machine as cobbler. This
 # requires puppet_auto_setup above to be enabled
-remove_old_puppet_certs_automatically: <%= sign_puppet_certs_automatically %>
+remove_old_puppet_certs_automatically: <%= @sign_puppet_certs_automatically %>
+
+# choose a --server argument when running puppetd/puppet agent during kickstart
+#puppet_server: 'puppet'
+
+# let cobbler know that you're using a newer version of puppet
+# choose version 3 to use: 'puppet agent'; version 2 uses status quo: 'puppetd'
+#puppet_version: 2
+
+# choose whether to enable puppet parameterized classes or not.
+# puppet versions prior to 2.6.5 do not support parameters
+#puppet_parameterized_classes: 1
 
 # set to 1 to enable Cobbler's DHCP management features.
 # the choice of DHCP management engine is in /etc/cobbler/modules.conf
-manage_dhcp: <%= manage_dhcp %>
+manage_dhcp: <%= @manage_dhcp %>
 
 # set to 1 to enable Cobbler's DNS management features.
 # the choice of DNS mangement engine is in /etc/cobbler/modules.conf
-manage_dns: <%= manage_dns %>
+manage_dns: <%= @manage_dns %>
 
 # set to path of bind chroot to create bind-chroot compatible bind
 # configuration files.  This should be automatically detected.
@@ -231,7 +255,7 @@ bind_master: 127.0.0.1
 
 # set to 1 to enable Cobbler's TFTP management features.
 # the choice of TFTP mangement engine is in /etc/cobbler/modules.conf
-manage_tftpd: <%= manage_tftpd %>
+manage_tftpd: <%= @manage_tftpd %>
 
 # set to 1 to enable Cobbler's RSYNC management features.
 manage_rsync: 0
@@ -245,7 +269,7 @@ manage_reverse_zones: []
 # if using cobbler with manage_dhcp, put the IP address
 # of the cobbler server here so that PXE booting guests can find it
 # if you do not set this correctly, this will be manifested in TFTP open timeouts.
-next_server: <%= next_server_ip %>
+next_server: <%= @next_server_ip %>
 
 # settings for power management features.  optional.
 # see https://github.com/cobbler/cobbler/wiki/Power-management to learn more
@@ -265,7 +289,7 @@ power_template_dir: "/etc/cobbler/power"
 # first in it's BIOS order.  Enable this if PXE is first in your BIOS
 # boot order, otherwise leave this disabled.   See the manpage
 # for --netboot-enabled.
-pxe_just_once: 1
+pxe_just_once: 0
 
 # the templates used for PXE config generation are sourced
 # from what directory?
@@ -318,7 +342,7 @@ register_new_installs: 0
 
 # Flags to use for yum's reposync.  If your version of yum reposync
 # does not support -l, you may need to remove that option.
-reposync_flags: "-l -m -d"
+reposync_flags: "-l -n -d"
 
 # when DHCP and DNS management are enabled, cobbler sync can automatically
 # restart those services to apply changes.  The exception for this is
@@ -357,13 +381,18 @@ scm_track_mode: "git"
 # if you have a server that appears differently to different subnets
 # (dual homed, etc), you need to read the --server-override section
 # of the manpage for how that works.
-server: <%= server_ip %>
+server: <%= @server_ip %>
 
 # If set to 1, all commands will be forced to use the localhost address
 # instead of using the above value which can force commands like
 # cobbler sync to open a connection to a remote address if one is in the
 # configuration and would traceback.
 client_use_localhost: 0
+
+# If set to 1, all commands to the API (not directly to the XMLRPC
+# server) will go over HTTPS instead of plaintext. Be sure to change
+# the http_port setting to the correct value for the web server
+client_use_https: 0
 
 # this is a directory of files that cobbler uses to make
 # templating easier.  See the Wiki for more information.  Changing
@@ -414,3 +443,20 @@ yumdownloader_flags: "--resolve"
 
 # sort and indent JSON output to make it more human-readable
 serializer_pretty_json: 0
+
+# replication rsync options for distros, kickstarts, snippets set to override default value of "-avzH"
+replicate_rsync_options: "-avzH"
+
+# replication rsync options for repos set to override default value of "-avzH"
+replicate_repo_rsync_options: "-avzH"
+
+# always write DHCP entries, regardless if netboot is enabled
+always_write_dhcp_entries: 0
+
+# external proxy - used by: get-loaders, reposync, signature update
+# eg: proxy_url_ext: "http://192.168.1.1:8080"
+proxy_url_ext: ""
+
+# internal proxy - used by systems to reach cobbler for kickstarts
+# eg: proxy_url_int: "http://10.0.0.1:8080"
+proxy_url_int: ""

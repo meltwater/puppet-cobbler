@@ -120,94 +120,20 @@ class cobbler (
 ) inherits cobbler::params {
 
   # require apache modules
-  require apache::mod::wsgi
-  require apache::mod::proxy
-  require apache::mod::proxy_http
+  include apache
+  include apache::mod::wsgi
+  include apache::mod::proxy
+  include apache::mod::proxy_http
 
-  # install section
-  package { 'tftp-server': ensure => present, }
-  package { 'syslinux':    ensure => present, }
-  package { $package_name :
-    ensure  => $package_ensure,
-    require => [ Package['syslinux'], Package['tftp-server'], ],
-  }
+  include cobbler::prerequisites
+  include cobbler::install
+  include cobbler::service
+  include cobbler::config
 
-  service { $service_name :
-    ensure  => running,
-    enable  => true,
-    require => Package[$package_name],
-  }
+  Class['cobbler::prerequisites']->
+  Class['cobbler::install'] ->
+  Class['cobbler::config'] ->
+  Class['cobbler::service']
 
-  # file defaults
-  File {
-    ensure => file,
-    owner  => root,
-    group  => root,
-    mode   => '0644',
-  }
-  file { '/etc/httpd/conf.d/proxy_cobbler.conf':
-    content => template('cobbler/proxy_cobbler.conf.erb'),
-    notify  => Service[$apache_service],
-  }
-  file { $distro_path :
-    ensure => directory,
-    mode   => '0755',
-  }
-  file { "${distro_path}/kickstarts" :
-    ensure => directory,
-    mode   => '0755',
-  }
-  file { '/etc/cobbler/settings':
-    content => template('cobbler/settings.erb'),
-    require => Package[$package_name],
-    notify  => Service[$service_name],
-  }
-  file { '/etc/cobbler/modules.conf':
-    content => template('cobbler/modules.conf.erb'),
-    require => Package[$package_name],
-    notify  => Service[$service_name],
-  }
-  file { '/etc/httpd/conf.d/distros.conf': content => template('cobbler/distros.conf.erb'), }
-  file { '/etc/httpd/conf.d/cobbler.conf': content => template('cobbler/cobbler.conf.erb'), }
-
-  # cobbler sync command
-  exec { 'cobblersync':
-    command     => '/usr/bin/cobbler sync',
-    refreshonly => true,
-  }
-
-  # purge resources
-  if $purge_distro == true {
-    resources { 'cobblerdistro':  purge => true, }
-  }
-  if $purge_repo == true {
-    resources { 'cobblerrepo':    purge => true, }
-  }
-  if $purge_profile == true {
-    resources { 'cobblerprofile': purge => true, }
-  }
-  if $purge_system == true {
-    resources { 'cobblersystem':  purge => true, }
-  }
-
-  # include ISC DHCP only if we choose manage_dhcp
-  if $manage_dhcp == '1' {
-    package { 'dhcp':
-      ensure => present,
-    }
-    service { 'dhcpd':
-      ensure  => running,
-      require => Package['dhcp'],
-    }
-    file { '/etc/cobbler/dhcp.template':
-      ensure  => present,
-      owner   => root,
-      group   => root,
-      mode    => '0644',
-      content => template('cobbler/dhcp.template.erb'),
-      require => Package[$package_name],
-      notify  => Exec['cobblersync'],
-    }
-  }
 }
 # vi:nowrap:

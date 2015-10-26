@@ -52,8 +52,8 @@ class cobbler::params {
   $allow_access = "${server_ip} ${::ipaddress} 127.0.0.1"
 
   # purge resources that are not defined
-  $purge_distro  = true
-  $purge_repo    = true
-  $purge_profile = true
-  $purge_system  = true
+  $purge_distro  = false
+  $purge_repo    = false
+  $purge_profile = false
+  $purge_system  = false
 }

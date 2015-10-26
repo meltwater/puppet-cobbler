@@ -1,6 +1,6 @@
-AliasMatch ^/distros(.*)?$ "<%= distro_path %>$1"
+AliasMatch ^/distros(.*)?$ "<%= @distro_path %>$1"
 
-<Directory "<%= distro_path %>">
+<Directory "<%= @distro_path %>">
 	Options Indexes FollowSymLinks
 	Order allow,deny
 	Allow from all
